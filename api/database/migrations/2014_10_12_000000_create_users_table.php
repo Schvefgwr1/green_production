@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('login');
             $table->string('password');
             $table->boolean('root');
+            $table->integer('code');
+            $table->timestamps();
         });
     }
 

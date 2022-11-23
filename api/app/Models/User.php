@@ -19,9 +19,9 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'login',
-        'email',
         'password',
-        'root'
+        'root',
+        'code'
     ];
 
     //передаются через запросы

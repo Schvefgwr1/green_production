@@ -1,5 +1,10 @@
 <?php
 
+use App\Http\Controllers\API\EmployeesController;
+use App\Http\Controllers\API\GoodsController;
+use App\Http\Controllers\API\OrdersController;
+use App\Http\Controllers\API\PlantingsController;
+use App\Http\Controllers\API\StockController;
 use App\Http\Controllers\API\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,4 +26,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/user', [UserController::class, 'authorizeUser']);
 
-
+Route::post('/employees',[EmployeesController::class, 'getEmployees']);
+Route::post('/stock',[StockController::class, 'getPositions']);
+Route::post('/plantings',[PlantingsController::class, 'getPlantings']);
+Route::post('/orders',[OrdersController::class, 'getOrders']);
+Route::post('/goods',[GoodsController::class, 'getGoods']);
