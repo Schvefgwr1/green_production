@@ -27,13 +27,13 @@ class OrdersController extends Controller
                     ->get();
             for($i = 0; $i < count($Orders); $i++) {
                 $Goods =
-//                    DB::table('goods_has_orders_of_goods')
-//                        ->join('goods', 'goods_has_orders_of_goods.id_Good', '=', 'goods.id_Good')
-//                        ->select('goods.Name_of_Good',
-//                            'goods.Price_for_Good',
-//                            'goods.Weight_of_Good',
-//                            'goods.Type_of_Packaging')
-//                        ->where('goods_has_orders_of_goods.id_Order', $Orders[$i]->id_Order);
+                    /*DB::table('goods_has_orders_of_goods')
+                        ->join('goods', 'goods.id_Good', '=', 'goods_has_orders_of_goods.id_Good')
+                        ->select('goods.Name_of_Good',
+                            'goods.Price_for_Good',
+                            'goods.Weight_of_Good',
+                            'goods.Type_of_Packaging')
+                        ->where('goods_has_orders_of_goods.id_Order', $Orders[$i]->id_Order);*/
                       DB::select('SELECT
 	                                        goods.Name_of_Good,
                                             goods.Price_for_Good,
@@ -41,7 +41,7 @@ class OrdersController extends Controller
                                             goods.Type_of_Packaging
                                         FROM `goods_has_orders_of_goods` INNER JOIN `goods`
                                         ON goods_has_orders_of_goods.id_Good = goods.id_Good
-                                        WHERE goods_has_orders_of_goods.id_Order = 1');
+                                        WHERE goods_has_orders_of_goods.id_Order = ' .$Orders[$i]->id_Order);
                 $Employee = DB::table('Employees')->where('id_Employee', $Orders[$i]->Employee)->first();
                 $Letter =
                     DB::table('Letter_to_Shop')
