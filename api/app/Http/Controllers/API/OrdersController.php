@@ -62,4 +62,174 @@ class OrdersController extends Controller
         else
             return response()->json($this->codeVerification($input['access_code']), 401);
     }
+
+    public function setOrder(Request $request) : JsonResponse
+    {
+        $validation = $request->validate([
+            'access_code' => 'required',
+            'Name_of_Shop' => 'required',
+            'Date_jf_Delivery' => 'required',
+            'Status_of_Order' => 'required',
+            'Goods' => 'required',
+            'id_Employee' => 'required',
+        ]);
+        $input = $request->all();
+        if($this->codeVerification($input['access_code'])['success']) {
+            if($this->codeVerification($input['access_code'])['status'] == 'root') {
+                $Orders = DB::table('Orders_of_Goods')->get();
+                $Employee = DB::table('employees')->where('id_Employee', $input['id_Employee'])->first();
+                if(($Employee) &&
+                (($Employee->Job_Title == 'Orders Manager') ||
+                ($Employee->Job_Title == 'Many Jobs'))) {
+                    for($i = 0; $i < count($input['Goods']); $i++) {
+                        if(!DB::table('goods')->where('id_Good', $input['Goods'][$i])->first())
+                            return response()->json([
+                                'insert' => 'error',
+                                'reason' => 'incorrect goods'
+                            ], 405);
+                    }
+                    DB::insert(
+                        'insert into orders_of_goods (
+                             Name_of_Shop,
+                             Date_jf_Delivery,
+                             Status_of_Order,
+                             id_Employee,
+                             id_Order
+                        ) values (?, ?, ?, ?, ?)', [
+                            $input['Name_of_Shop'],
+                            $input['Date_jf_Delivery'],
+                            $input['Status_of_Order'],
+                            $input['id_Employee'],
+                            count($Orders) + 1
+                        ]
+                    );
+                    for($i = 0; $i < count($input['Goods']); $i++) {
+                        DB::insert('insert into goods_has_orders_of_goods (
+                             id_Order,
+                             id_Good
+                        ) values (?, ?)', [
+                                count($Orders) + 1,
+                                $input['Goods'][$i]
+                            ]
+                        );
+                    }
+                    return response()->json([
+                        'insert' => 'success'
+                    ], 200);
+                }
+                else {
+                    return response()->json([
+                        'insert' => 'error',
+                        'reason' => 'incorrect employee'
+                    ], 403);
+                }
+            }
+            else return response()->json([
+                'insert' => 'error',
+                'reason' => 'don`t have root'
+            ], 402);
+
+        }
+        else
+            return response()->json($this->codeVerification($input['access_code']), 401);
+    }
+
+    public function setLetter(Request $request) : JsonResponse
+    {
+        $validation = $request->validate([
+            'access_code' => 'required',
+            'Data_of_Letter' => 'required',
+            'Text' => 'required',
+            'Status' => 'required',
+            'id_Reason' => 'required',
+            'id_Order' => 'required'
+        ]);
+        $input = $request->all();
+        if($this->codeVerification($input['access_code'])['success']) {
+            if($this->codeVerification($input['access_code'])['status'] == 'root') {
+                $Letters = DB::table('letter_to_shop')->get();
+                $Order = DB::table('orders_of_goods')->where('id_Order', $input['id_Order'])->first();
+                if(($Order) && (!$Order->id_Letter)) {
+                    if(DB::table('reasons_of_letters')->where('id_Reason', $input['id_Reason'])->first()) {
+                        DB::insert(
+                            'insert into letter_to_shop (
+                                Data_of_Letter,
+                                Text,
+                                Status,
+                                id_Reason,
+                                id_Letter
+                            ) values (?, ?, ?, ?, ?)',
+                            [
+                                $input['Data_of_Letter'],
+                                $input['Text'],
+                                $input['Status'],
+                                $input['id_Reason'],
+                                count($Letters) + 1
+                            ]
+                        );
+                        DB::update(
+                            'update orders_of_goods set id_Letter = ? where id_Order = ?',
+                            [count($Letters) + 1, $input['id_Order']]
+                        );
+                        return response()->json([
+                            'insert' => 'success'
+                        ], 200);
+                    }
+                    else {
+                        return response()->json([
+                            'insert' => 'error',
+                            'reason' => 'incorrect reason of letter'
+                        ], 407);
+                    }
+                }
+                else {
+                    return response()->json([
+                        'insert' => 'error',
+                        'reason' => 'incorrect order'
+                    ], 406);
+                }
+            }
+            else return response()->json([
+                'insert' => 'error',
+                'reason' => 'don`t have root'
+            ], 402);
+
+        }
+        else
+            return response()->json($this->codeVerification($input['access_code']), 401);
+    }
+
+    public function setReason(Request $request) : JsonResponse
+    {
+        $validation = $request->validate([
+            'access_code' => 'required',
+            'Reasons_Of_Letters' => 'required'
+        ]);
+        $input = $request->all();
+        if($this->codeVerification($input['access_code'])['success']) {
+            if($this->codeVerification($input['access_code'])['status'] == 'root') {
+                $Reasons = DB::table('reasons_of_letters')->get();
+                DB::insert(
+                    'insert into reasons_of_letters (
+                        Reasons_Of_Letters,
+                        id_Reason
+                    ) values (?, ?)',
+                    [
+                        $input['Reasons_Of_Letters'],
+                        count($Reasons) + 1
+                    ]
+                );
+                return response()->json([
+                    'insert' => 'success'
+                ], 200);
+            }
+            else return response()->json([
+                'insert' => 'error',
+                'reason' => 'don`t have root'
+            ], 402);
+
+        }
+        else
+            return response()->json($this->codeVerification($input['access_code']), 401);
+    }
 }

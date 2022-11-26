@@ -31,3 +31,11 @@ Route::post('/stock',[StockController::class, 'getPositions']);
 Route::post('/plantings',[PlantingsController::class, 'getPlantings']);
 Route::post('/orders',[OrdersController::class, 'getOrders']);
 Route::post('/goods',[GoodsController::class, 'getGoods']);
+
+Route::post('/new_employee',[EmployeesController::class, 'setEmployee']);
+Route::post('/new_in_stock',[StockController::class, 'setPosition']);
+Route::post('/new_planting',[PlantingsController::class, 'setPlanting']);
+Route::post('/new_order',[OrdersController::class, 'setOrder']);
+Route::post('/new_letter',[OrdersController::class, 'setLetter']);
+Route::post('/new_reason',[OrdersController::class, 'setReason']);
+Route::post('/new_good',[GoodsController::class, 'setGood']);
