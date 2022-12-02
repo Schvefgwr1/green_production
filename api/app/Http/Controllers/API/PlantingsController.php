@@ -20,6 +20,7 @@ class PlantingsController extends Controller
                 DB::table('information_about_planting')
                     ->join('employees', 'employees.id_Planting', '=', 'information_about_planting.id_Planting')
                     ->select('information_about_planting.Temperature',
+                        'information_about_planting.id_Planting',
                         'information_about_planting.Illumination',
                         'information_about_planting.Wet',
                         'information_about_planting.Content_of_dangerous_bacteria',
