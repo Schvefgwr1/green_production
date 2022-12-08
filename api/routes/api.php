@@ -39,3 +39,7 @@ Route::post('/new_order',[OrdersController::class, 'setOrder']);
 Route::post('/new_letter',[OrdersController::class, 'setLetter']);
 Route::post('/new_reason',[OrdersController::class, 'setReason']);
 Route::post('/new_good',[GoodsController::class, 'setGood']);
+
+Route::post('/call_procedure',[OrdersController::class, 'callProcedure']);
+Route::post('/find_order',[OrdersController::class, 'findOrder']);
+Route::post('/get_temp',[PlantingsController::class, 'getMiddleTemperature']);

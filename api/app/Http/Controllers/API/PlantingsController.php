@@ -97,4 +97,26 @@ class PlantingsController extends Controller
         else
             return response()->json($this->codeVerification($input['access_code']), 401);
     }
+
+    public function getMiddleTemperature(Request $request) : JsonResponse
+    {
+        $validation = $request->validate([
+            'access_code' => 'required',
+        ]);
+        $input = $request->all();
+        if($this->codeVerification($input['access_code'])['success']) {
+            if ($this->codeVerification($input['access_code'])['status'] == 'root') {
+                $queryResult = DB::select('select MiddleTemperature() as MiddleTemperature');
+                $result = collect($queryResult);
+                return response()->json([
+                    'result' => $result
+                ], 200);
+            } else return response()->json([
+                'insert' => 'error',
+                'reason' => 'don`t have root'
+            ], 402);
+        }
+        else
+            return response()->json($this->codeVerification($input['access_code']), 401);
+    }
 }

@@ -63,6 +63,65 @@ class OrdersController extends Controller
             return response()->json($this->codeVerification($input['access_code']), 401);
     }
 
+    public function findOrder(Request $request) : JsonResponse
+    {
+        $validation = $request->validate([
+            'access_code' => 'required',
+            'Good' => 'required',
+            'Employee' => 'required'
+        ]);
+        $input = $request->all();
+        if($this->codeVerification($input['access_code'])['success']) {
+            if ($this->codeVerification($input['access_code'])['status'] == 'root') {
+                $queryResult = DB::select('call FindOrder(?, ?)', [$input['Good'], $input['Employee']]);
+                $result = collect($queryResult);
+                if(!$queryResult) {
+                    return response()->json([
+                        'result' => 'error',
+                        'reason' => 'incorrect input'
+                    ], 440);
+                }
+                return response()->json([
+                    'result' => $result
+                ], 200);
+            } else return response()->json([
+                'insert' => 'error',
+                'reason' => 'don`t have root'
+            ], 402);
+        }
+        else
+            return response()->json($this->codeVerification($input['access_code']), 401);
+    }
+
+    public function callProcedure(Request $request) : JsonResponse
+    {
+        $validation = $request->validate([
+            'access_code' => 'required',
+            'Name' => 'required',
+        ]);
+        $input = $request->all();
+        if($this->codeVerification($input['access_code'])['success']) {
+            if ($this->codeVerification($input['access_code'])['status'] == 'root') {
+                $queryResult = DB::select('call FindLettersToShop(?)', [$input['Name']]);
+                $result = collect($queryResult);
+                if(!$queryResult) {
+                    return response()->json([
+                        'result' => 'error',
+                        'reason' => 'incorrect name'
+                    ], 440);
+                }
+                return response()->json([
+                    'result' => $result
+                    ], 200);
+            } else return response()->json([
+                'insert' => 'error',
+                'reason' => 'don`t have root'
+            ], 402);
+        }
+        else
+            return response()->json($this->codeVerification($input['access_code']), 401);
+    }
+
     public function setOrder(Request $request) : JsonResponse
     {
         $validation = $request->validate([
